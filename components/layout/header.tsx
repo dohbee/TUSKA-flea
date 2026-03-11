@@ -14,7 +14,7 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
 
- if (pathname === "/" || pathname === "/login" || pathname === "/signup") {
+ if (pathname === "/" || pathname === "/login" || pathname === "/signup" || pathname === "/privacy") {
   return null;
 }
 

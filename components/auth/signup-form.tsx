@@ -19,6 +19,8 @@ export default function SignupForm() {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
+  const [showPrivacySummary, setShowPrivacySummary] = useState(false);
 
   function validateForm() {
   if (!/^[가-힣]{2,5}$/.test(fullName)) {
@@ -47,6 +49,9 @@ export default function SignupForm() {
 
   if (signupType === "freshman" && !inviteCode) {
     return "신입생 가입은 초대코드가 필요합니다.";
+  }
+  if (!agreedToPrivacy) {
+    return "개인정보 수집 및 이용에 동의해주세요.";
   }
 
   return null;
@@ -105,6 +110,8 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setConfirmPassword("");
     setContactKakaoId("");
     setInviteCode("");
+    setAgreedToPrivacy(false);
+    setShowPrivacySummary(false);
   } catch (err) {
     setError("회원가입 중 오류가 발생했습니다.");
   } finally {
@@ -267,10 +274,60 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             />
           </div>
         )}
+<div className="rounded-xl border bg-gray-50 p-4">
+  <div className="flex items-start gap-3">
+    <input
+      id="privacy-agreement"
+      type="checkbox"
+      checked={agreedToPrivacy}
+      onChange={(e) => setAgreedToPrivacy(e.target.checked)}
+      className="mt-1 h-4 w-4"
+    />
 
+    <div className="flex-1">
+      <label
+        htmlFor="privacy-agreement"
+        className="text-sm font-medium text-gray-800"
+      >
+        개인정보 수집 및 이용에 동의합니다.
+      </label>
+
+      <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
+        <button
+          type="button"
+          onClick={() => setShowPrivacySummary((prev) => !prev)}
+          className="font-medium text-black underline"
+        >
+          {showPrivacySummary ? "접기" : "자세히 보기"}
+        </button>
+
+        <Link href="/privacy" className="text-gray-600 underline">
+          전체 안내 보기
+        </Link>
+      </div>
+
+      {showPrivacySummary && (
+        <div className="mt-3 rounded-lg bg-white p-3 text-xs leading-6 text-gray-700">
+          <p>
+            TUSKA Flea는 회원 식별, 게시글 작성자 확인, 이용자 간 연락 수단 제공을
+            위해 이름, 이메일 주소, 카카오톡 ID를 수집합니다.
+          </p>
+          <p className="mt-2">
+            수집된 정보는 회원 탈퇴 또는 서비스 이용 종료 시까지 보관되며,
+            서비스 운영에 필요한 범위를 제외하고 제3자에게 제공하지 않습니다.
+          </p>
+          <p className="mt-2">
+            게시글 작성 시 작성자의 이름과 카카오톡 ID는 다른 로그인 이용자에게
+            표시될 수 있습니다.
+          </p>
+        </div>
+      )}
+    </div>
+  </div>
+</div>
         <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !agreedToPrivacy}
             className="w-full rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
             {loading ? "가입 처리 중..." : "회원가입"}
