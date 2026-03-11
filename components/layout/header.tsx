@@ -14,6 +14,10 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
 
+ if (pathname === "/" || pathname === "/login" || pathname === "/signup") {
+  return null;
+}
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/login");

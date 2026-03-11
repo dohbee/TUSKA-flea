@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import PostCard from "@/components/posts/post-card";
 import type { PostStatus } from "@/types/post";
@@ -25,6 +26,8 @@ interface AuthorMap {
 }
 
 export default function PostsPage() {
+  const router = useRouter();
+
   const [posts, setPosts] = useState<PostListItem[]>([]);
   const [authorMap, setAuthorMap] = useState<AuthorMap>({});
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -32,72 +35,85 @@ export default function PostsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchPosts = async () => {
-    setLoading(true);
-    setError(null);
+    const { data: postData, error: postError } = await supabase
+      .from("posts")
+      .select(`
+        id,
+        title,
+        description,
+        price,
+        is_free,
+        status,
+        created_at,
+        user_id,
+        post_images (
+          image_url,
+          sort_order
+        )
+      `)
+      .order("created_at", { ascending: false });
 
-    try {
-      const { data: postData, error: postError } = await supabase
-        .from("posts")
-        .select(`
-          id,
-          title,
-          description,
-          price,
-          is_free,
-          status,
-          created_at,
-          user_id,
-          post_images (
-            image_url,
-            sort_order
-          )
-        `)
-        .order("created_at", { ascending: false });
-
-      if (postError) {
-        console.error("postError:", postError);
-        setError("게시글을 불러오는 중 오류가 발생했습니다.");
-        return;
-      }
-
-      const normalizedPosts = (postData ?? []) as PostListItem[];
-      setPosts(normalizedPosts);
-
-      const userIds = [...new Set(normalizedPosts.map((post) => post.user_id))];
-
-      if (userIds.length === 0) {
-        setAuthorMap({});
-        return;
-      }
-
-      const { data: profileData, error: profileError } = await supabase
-        .from("profiles")
-        .select("id, display_name")
-        .in("id", userIds);
-
-      if (profileError) {
-        console.error("profileError:", profileError);
-        setAuthorMap({});
-        return;
-      }
-
-      const nextAuthorMap: AuthorMap = {};
-      for (const profile of profileData ?? []) {
-        nextAuthorMap[profile.id] = profile.display_name;
-      }
-
-      setAuthorMap(nextAuthorMap);
-    } catch (err) {
-      console.error(err);
-      setError("게시글을 불러오는 중 오류가 발생했습니다.");
-    } finally {
-      setLoading(false);
+    if (postError) {
+      console.error("postError:", postError);
+      throw new Error("게시글을 불러오는 중 오류가 발생했습니다.");
     }
+
+    const normalizedPosts = (postData ?? []) as PostListItem[];
+    setPosts(normalizedPosts);
+
+    const userIds = [...new Set(normalizedPosts.map((post) => post.user_id))];
+
+    if (userIds.length === 0) {
+      setAuthorMap({});
+      return;
+    }
+
+    const { data: profileData, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, display_name")
+      .in("id", userIds);
+
+    if (profileError) {
+      console.error("profileError:", profileError);
+      setAuthorMap({});
+      return;
+    }
+
+    const nextAuthorMap: AuthorMap = {};
+    for (const profile of profileData ?? []) {
+      nextAuthorMap[profile.id] = profile.display_name;
+    }
+
+    setAuthorMap(nextAuthorMap);
   };
 
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    const checkAuthAndFetchPosts = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+          router.replace("/login?message=login_required");
+          return;
+        }
+
+        await fetchPosts();
+      } catch (err) {
+        console.error(err);
+        setError("게시글을 불러오는 중 오류가 발생했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuthAndFetchPosts();
+  }, [router]);
 
   const filteredPosts = useMemo(() => {
     const keyword = searchKeyword.trim().toLowerCase();
@@ -108,6 +124,14 @@ export default function PostsPage() {
       post.title.toLowerCase().includes(keyword)
     );
   }, [posts, searchKeyword]);
+
+  if (loading) {
+    return (
+      <main className="mx-auto max-w-5xl px-4 py-6">
+        <p className="text-sm text-gray-500">불러오는 중...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-6">
@@ -132,27 +156,25 @@ export default function PostsPage() {
         />
       </div>
 
-      {loading && <p className="text-sm text-gray-500">불러오는 중...</p>}
-
       {error && (
         <div className="rounded-lg bg-red-100 px-4 py-3 text-sm text-red-700">
           {error}
         </div>
       )}
 
-      {!loading && !error && posts.length === 0 && (
+      {!error && posts.length === 0 && (
         <div className="rounded-2xl border bg-white px-6 py-10 text-center text-sm text-gray-500">
           아직 등록된 게시글이 없습니다.
         </div>
       )}
 
-      {!loading && !error && posts.length > 0 && filteredPosts.length === 0 && (
+      {!error && posts.length > 0 && filteredPosts.length === 0 && (
         <div className="rounded-2xl border bg-white px-6 py-10 text-center text-sm text-gray-500">
           검색 결과가 없습니다.
         </div>
       )}
 
-      {!loading && !error && filteredPosts.length > 0 && (
+      {!error && filteredPosts.length > 0 && (
         <div className="grid gap-4">
           {filteredPosts.map((post) => {
             const sortedImages = [...(post.post_images ?? [])].sort(

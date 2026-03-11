@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import MyPostCard from "@/components/posts/my-post-card";
 import type { PostStatus } from "@/types/post";
@@ -25,6 +26,8 @@ function extractStoragePathFromPublicUrl(url: string) {
 }
 
 export default function MyPage() {
+  const router = useRouter();
+
   const [posts, setPosts] = useState<MyPostItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,8 +42,7 @@ export default function MyPage() {
     } = await supabase.auth.getUser();
 
     if (userError || !user) {
-      setError("로그인 정보를 확인할 수 없습니다.");
-      setLoading(false);
+      router.replace("/login?message=login_required");
       return;
     }
 
@@ -85,7 +87,6 @@ export default function MyPage() {
     setError(null);
 
     try {
-      // 1) 연결된 이미지 조회
       const { data: imageRows, error: imageFetchError } = await supabase
         .from("post_images")
         .select("image_url")
@@ -95,7 +96,6 @@ export default function MyPage() {
         throw new Error("게시글 이미지 정보를 불러오는 중 오류가 발생했습니다.");
       }
 
-      // 2) storage 파일 삭제
       const filePaths =
         imageRows
           ?.map((row) => extractStoragePathFromPublicUrl(row.image_url))
@@ -111,9 +111,6 @@ export default function MyPage() {
         }
       }
 
-      // 3) posts 삭제
-      // post_images는 FK cascade로 같이 삭제될 가능성이 높지만,
-      // 핵심은 storage 파일 정리 후 posts를 지우는 것
       const { error: postDeleteError } = await supabase
         .from("posts")
         .delete()
@@ -123,7 +120,6 @@ export default function MyPage() {
         throw new Error(`게시글 삭제 실패: ${postDeleteError.message}`);
       }
 
-      // 4) 화면에서 제거
       setPosts((prev) => prev.filter((post) => post.id !== postId));
     } catch (err) {
       console.error(err);

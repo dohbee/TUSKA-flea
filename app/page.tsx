@@ -1,65 +1,94 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/client";
+
+export default function HomePage() {
+  const router = useRouter();
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        router.replace("/posts");
+        return;
+      }
+
+      setCheckingAuth(false);
+    };
+
+    checkSession();
+  }, [router]);
+
+  if (checkingAuth) {
+    return (
+      <main className="mx-auto flex min-h-screen max-w-5xl items-center justify-center px-4">
+        <p className="text-sm text-gray-500">불러오는 중...</p>
       </main>
-    </div>
+    );
+  }
+
+  return (
+    <main className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-4 py-16 text-center">
+      <div className="max-w-2xl">
+        <p className="mb-3 text-sm font-medium text-gray-500">
+          Tokyo University of Science Korean Association
+        </p>
+
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          TUSKA Flea
+        </h1>
+
+        <p className="mt-6 text-base leading-7 text-gray-600 sm:text-lg">
+          학교 한국인 유학생들을 위한 중고거래·무료나눔 게시판입니다.
+          전공책, 생활용품, 각종 물품을 쉽고 가볍게 나눌 수 있습니다.
+        </p>
+
+        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link
+            href="/signup"
+            className="rounded-xl bg-black px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
+          >
+            회원가입
+          </Link>
+
+          <Link
+            href="/login"
+            className="rounded-xl border px-5 py-3 text-sm font-semibold text-gray-800 hover:bg-gray-50"
+          >
+            로그인
+          </Link>
+        </div>
+
+        <div className="mt-12 grid gap-4 text-left sm:grid-cols-3">
+          <div className="rounded-2xl border bg-white p-4 shadow-sm">
+            <h2 className="text-sm font-semibold">중고거래</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              전공책, 계산기, 생활용품 등을 학생끼리 편하게 거래할 수 있어요.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border bg-white p-4 shadow-sm">
+            <h2 className="text-sm font-semibold">무료나눔</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              더 이상 쓰지 않는 물건을 필요한 사람에게 무료로 나눌 수 있어요.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border bg-white p-4 shadow-sm">
+            <h2 className="text-sm font-semibold">간단한 연락</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              작성자의 카카오 ID를 통해 바로 연락하고 거래를 진행할 수 있어요.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }

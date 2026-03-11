@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import type { PostStatus } from "@/types/post";
@@ -43,6 +44,8 @@ export default function PostDetail({ postId }: PostDetailProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const router = useRouter();
+
   const fetchPost = async () => {
     setLoading(true);
     setError(null);
@@ -50,10 +53,15 @@ export default function PostDetail({ postId }: PostDetailProps) {
     try {
       // 현재 로그인 유저
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+  data: { user },
+} = await supabase.auth.getUser();
 
-      setCurrentUserId(user?.id ?? null);
+if (!user) {
+  router.replace("/login");
+  return;
+}
+
+setCurrentUserId(user.id);
 
       // 게시글 조회
       const { data: postData, error: postError } = await supabase
