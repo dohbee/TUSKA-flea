@@ -76,12 +76,14 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     const authType = signupType === "student" ? "school_email" : "invite_code";
     const userStatus =
       signupType === "student" ? "verified_student" : "invited_freshman";
+    
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/login`,
+        emailRedirectTo: `${siteUrl}/login`,
         data: {
           full_name: fullName,
           contact_kakao_id: contactKakaoId,

@@ -17,7 +17,7 @@ export default function NewPostPage() {
       } = await supabase.auth.getUser();
 
       if (error || !user) {
-        router.replace("/login");
+        router.replace("/login?message=login_required");
         return;
       }
 
