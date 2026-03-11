@@ -43,11 +43,17 @@ export default function LoginForm() {
       await ensureProfile();
       router.push("/posts");
       router.refresh();
-    } catch {
-      setError("로그인 중 오류가 발생했습니다.");
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) {
+  console.error(err);
+
+  if (err instanceof Error) {
+    setError(err.message);
+  } else {
+    setError("로그인 중 오류가 발생했습니다.");
+  }
+} finally {
+  setLoading(false);
+}
   };
 
   return (

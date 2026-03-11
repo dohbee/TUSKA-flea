@@ -7,7 +7,7 @@ export async function ensureProfile() {
   } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    throw new Error("사용자 정보를 불러오지 못했습니다.");
+    throw new Error(userError?.message ?? "사용자 정보를 불러오지 못했습니다.");
   }
 
   const { data: existingProfile, error: profileFetchError } = await supabase
@@ -17,7 +17,7 @@ export async function ensureProfile() {
     .maybeSingle();
 
   if (profileFetchError) {
-    throw new Error("프로필 조회 중 오류가 발생했습니다.");
+    throw new Error(`프로필 조회 실패: ${profileFetchError.message}`);
   }
 
   if (existingProfile) {
@@ -42,6 +42,6 @@ export async function ensureProfile() {
   });
 
   if (insertError) {
-    throw new Error("프로필 생성 중 오류가 발생했습니다.");
+    throw new Error(`프로필 생성 실패: ${insertError.message}`);
   }
 }
