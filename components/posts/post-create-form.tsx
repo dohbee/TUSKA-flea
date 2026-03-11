@@ -232,7 +232,7 @@ export default function PostCreateForm() {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="예: 카시오 공학용 계산기 판매합니다"
+            placeholder="예: 교과서 판매합니다."
             className="w-full rounded-xl border border-gray-300 px-3 py-2 outline-none focus:border-black"
           />
         </div>
