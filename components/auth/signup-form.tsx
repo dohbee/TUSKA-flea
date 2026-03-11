@@ -96,7 +96,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     }
 
     setSuccessMessage(
-      "회원가입이 완료되었습니다. 이메일 인증 링크를 확인해주세요."
+      "이메일 인증 링크를 통해 회원가입을 완료해주세요."
     );
 
     setFullName("");
