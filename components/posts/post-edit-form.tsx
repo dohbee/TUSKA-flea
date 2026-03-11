@@ -86,11 +86,18 @@ export default function PostEditForm({ postId }: PostEditFormProps) {
         .eq("id", postId)
         .maybeSingle();
 
-      if (error || !data) {
-        setError("게시글을 불러오지 못했습니다.");
-        setLoading(false);
-        return;
-      }
+   if (error) {
+  console.error("post fetch error:", error);
+  setError(`게시글 조회 실패: ${error.message}`);
+  setLoading(false);
+  return;
+}
+
+if (!data) {
+  setError("게시글을 찾을 수 없습니다.");
+  setLoading(false);
+  return;
+}
 
       if (data.user_id !== user.id) {
         setError("본인이 작성한 게시글만 수정할 수 있습니다.");

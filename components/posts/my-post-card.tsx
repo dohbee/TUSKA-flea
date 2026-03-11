@@ -95,7 +95,7 @@ export default function MyPostCard({
                 type="button"
                 disabled={updating || deleting}
                 onClick={() => handleStatusChange(option)}
-                className={`rounded-lg border px-3 py-2 text-sm ${
+                className={`whitespace-nowrap rounded-lg border px-3 py-2 text-sm ${
                   isActive
                     ? "border-black bg-black text-white"
                     : "border-gray-300 bg-white text-gray-700"

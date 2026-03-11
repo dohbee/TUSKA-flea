@@ -28,7 +28,7 @@ export default function Header() {
     <header className="border-b bg-white">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
         <div className="flex items-center gap-6">
-          <Link href="/posts" className="text-lg font-bold">
+          <Link href="/posts" className="shrink-0 text-lg font-bold">
             TUSKA Flea
           </Link>
 
@@ -53,7 +53,7 @@ export default function Header() {
         <button
           type="button"
           onClick={handleLogout}
-          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
+          className="shrink-0 whitespace-nowrap rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
         >
           로그아웃
         </button>
@@ -66,7 +66,7 @@ export default function Header() {
             <Link
               key={item.href}
               href={item.href}
-              className={`text-sm ${
+              className={`whitespace-norap text-sm ${
                 isActive ? "font-semibold text-black" : "text-gray-600"
               }`}
             >

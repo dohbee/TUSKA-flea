@@ -41,6 +41,10 @@ export default function PostDetail({ postId }: PostDetailProps) {
   const [author, setAuthor] = useState<AuthorProfile | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -111,6 +115,7 @@ setCurrentUserId(user.id);
 
   useEffect(() => {
     fetchPost();
+    setCurrentImageIndex(0);
   }, [postId]);
 
   const sortedImages = useMemo(() => {
@@ -152,23 +157,68 @@ setCurrentUserId(user.id);
             </p>
           </div>
 
-          <span className="rounded-full bg-gray-100 px-3 py-1 text-sm">
-            {statusLabelMap[post.status]}
-          </span>
+<span className="shrink-0 whitespace-nowrap rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700">
+  {statusLabelMap[post.status]}
+</span>
         </div>
 
         {sortedImages.length > 0 && (
-          <div className="mb-6 grid gap-3 sm:grid-cols-2">
-            {sortedImages.map((image, index) => (
-              <img
-                key={index}
-                src={image.image_url}
-                alt="게시글 이미지"
-                className="h-64 w-full rounded-xl object-contain bg-gray-100"
-              />
-            ))}
-          </div>
-        )}
+  <div className="mb-6">
+    <div className="relative overflow-hidden rounded-2xl bg-gray-100">
+      <div className="flex h-80 items-center justify-center bg-gray-100 sm:h-96">
+        <img
+          src={sortedImages[currentImageIndex].image_url}
+          alt={`${post.title} 이미지 ${currentImageIndex + 1}`}
+          className="max-h-full max-w-full object-contain"
+        />
+      </div>
+
+      {sortedImages.length > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={() =>
+              setCurrentImageIndex((prev) =>
+                prev === 0 ? sortedImages.length - 1 : prev - 1
+              )
+            }
+            className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/60 px-3 py-2 text-sm text-white"
+          >
+            ‹
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              setCurrentImageIndex((prev) =>
+                prev === sortedImages.length - 1 ? 0 : prev + 1
+              )
+            }
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/60 px-3 py-2 text-sm text-white"
+          >
+            ›
+          </button>
+        </>
+      )}
+    </div>
+
+    {sortedImages.length > 1 && (
+      <div className="mt-3 flex items-center justify-center gap-2">
+        {sortedImages.map((_, index) => (
+          <button
+            key={index}
+            type="button"
+            onClick={() => setCurrentImageIndex(index)}
+            className={`h-2.5 w-2.5 rounded-full ${
+              index === currentImageIndex ? "bg-black" : "bg-gray-300"
+            }`}
+            aria-label={`이미지 ${index + 1} 보기`}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+)}
 
         <div className="mb-4 text-lg font-semibold">
           {post.is_free ? "무료나눔" : `${post.price.toLocaleString()}엔`}
