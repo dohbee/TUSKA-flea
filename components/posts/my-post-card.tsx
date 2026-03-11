@@ -110,7 +110,7 @@ export default function MyPostCard({
         <div className="flex items-center gap-2">
           <Link
             href={`/posts/${id}/edit`}
-            className="rounded-lg border px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            className="flex-1 whitespace-nowrap rounded-lg border px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
           >
             글 수정
           </Link>
@@ -119,7 +119,7 @@ export default function MyPostCard({
             type="button"
             onClick={handleDelete}
             disabled={deleting || updating}
-            className="rounded-lg border border-red-300 px-3 py-2 text-sm text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex-1 whitespace-nowrap rounded-lg border border-red-300 px-3 py-2 text-sm text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {deleting ? "삭제 중..." : "삭제"}
           </button>
