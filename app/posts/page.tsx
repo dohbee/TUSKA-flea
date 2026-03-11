@@ -151,7 +151,7 @@ export default function PostsPage() {
           type="text"
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
-          placeholder="예: 계산기, 교재, 공학용"
+          placeholder="예: 교재"
           className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-black"
         />
       </div>
