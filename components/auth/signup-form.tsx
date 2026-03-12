@@ -91,7 +91,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           contact_kakao_id: contactKakaoId,
           auth_type: authType,
           user_status: userStatus,
-          campus,
+          campus: campus,
           school_email:
             signupType === "student" ? email : null,
           invite_code:
