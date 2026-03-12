@@ -26,11 +26,26 @@ export async function ensureProfile() {
 
   const metadata = user.user_metadata ?? {};
 
+  console.log("user metadata:", user.user_metadata);
+  console.log("campus from metadata:", metadata.campus);
+
   const fullName = metadata.full_name ?? "";
   const contactKakaoId = metadata.contact_kakao_id ?? "";
   const authType = metadata.auth_type ?? "school_email";
   const userStatus = metadata.user_status ?? "pending";
   const schoolEmail = metadata.school_email ?? null;
+  const campus = metadata.campus ?? null;
+  
+  
+  console.log({
+  id: user.id,
+  display_name: fullName,
+  school_email: schoolEmail,
+  user_status: userStatus,
+  auth_type: authType,
+  contact_kakao_id: contactKakaoId,
+  campus,
+});
 
   const { error: insertError } = await supabase.from("profiles").insert({
     id: user.id,
@@ -39,6 +54,7 @@ export async function ensureProfile() {
     user_status: userStatus,
     auth_type: authType,
     contact_kakao_id: contactKakaoId,
+    campus: campus,
   });
 
   if (insertError) {

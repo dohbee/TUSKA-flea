@@ -43,7 +43,10 @@ export default function SignupForm() {
   if (password !== confirmPassword) {
     return "비밀번호 확인이 일치하지 않습니다.";
   }
-
+  if (!campus) {
+    return "소속 캠퍼스를 선택해주세요.";
+  }
+  
   if (!contactKakaoId) {
     return "카카오 ID를 입력해주세요.";
   }
@@ -51,13 +54,11 @@ export default function SignupForm() {
   if (signupType === "freshman" && !inviteCode) {
     return "신입생 가입은 초대코드가 필요합니다.";
   }  
-  if (!campus) {
-    return "소속 캠퍼스를 선택해주세요.";
-  }
   if (!agreedToPrivacy) {
     return "개인정보 수집 및 이용에 동의해주세요.";
   }
 
+    return null;
   }
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
