@@ -27,6 +27,7 @@ interface PostData {
 
 interface AuthorProfile {
   display_name: string;
+  campus: "kagurazaka" | "noda" | "katsushika" | null;
   contact_kakao_id: string | null;
 }
 
@@ -49,6 +50,12 @@ export default function PostDetail({ postId }: PostDetailProps) {
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
+
+  const campusLabelMap = {
+  kagurazaka: "神楽坂",
+  noda: "野田",
+  katsushika: "葛飾",
+} as const;
 
   const fetchPost = async () => {
     setLoading(true);
@@ -97,7 +104,7 @@ setCurrentUserId(user.id);
       // 작성자 프로필 조회
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
-        .select("display_name, contact_kakao_id")
+        .select("display_name, contact_kakao_id, campus")
         .eq("id", postData.user_id)
         .maybeSingle();
 
@@ -240,6 +247,10 @@ setCurrentUserId(user.id);
             <span className="font-medium">이름: </span>
             {author?.display_name ?? "알 수 없음"}
           </div>
+        <div>
+            <span className="font-medium">캠퍼스: </span>
+            {author?.campus ? campusLabelMap[author.campus] : "미등록"}
+        </div>
 
           <div>
             <span className="font-medium">카카오 ID: </span>

@@ -21,6 +21,7 @@ export default function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
   const [showPrivacySummary, setShowPrivacySummary] = useState(false);
+  const [campus, setCampus] = useState("");
 
   function validateForm() {
   if (!/^[가-힣]{2,5}$/.test(fullName)) {
@@ -49,14 +50,15 @@ export default function SignupForm() {
 
   if (signupType === "freshman" && !inviteCode) {
     return "신입생 가입은 초대코드가 필요합니다.";
+  }  
+  if (!campus) {
+    return "소속 캠퍼스를 선택해주세요.";
   }
   if (!agreedToPrivacy) {
     return "개인정보 수집 및 이용에 동의해주세요.";
   }
 
-  return null;
-}
-
+  }
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
 
@@ -89,6 +91,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           contact_kakao_id: contactKakaoId,
           auth_type: authType,
           user_status: userStatus,
+          campus,
           school_email:
             signupType === "student" ? email : null,
           invite_code:
@@ -112,6 +115,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setConfirmPassword("");
     setContactKakaoId("");
     setInviteCode("");
+    setCampus("");
     setAgreedToPrivacy(false);
     setShowPrivacySummary(false);
   } catch (err) {
@@ -239,6 +243,25 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             placeholder="비밀번호를 다시 입력"
             className="w-full rounded-xl border border-gray-300 px-3 py-2 outline-none focus:border-black"
           />
+        </div>
+        <div>
+        <label htmlFor="campus" className="mb-1 block text-sm font-medium">
+            캠퍼스
+        </label>
+        <select
+            id="campus"
+            value={campus}
+            onChange={(e) => setCampus(e.target.value)}
+            className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 outline-none focus:border-black"
+        >
+            <option value="">캠퍼스를 선택해주세요</option>
+            <option value="kagurazaka">神楽坂</option>
+            <option value="noda">野田</option>
+            <option value="katsushika">葛飾</option>
+        </select>
+        <p className="mt-1 text-xs text-gray-500">
+            주로 이용하는 캠퍼스를 선택해주세요. 거래 시 참고용으로 표시됩니다.
+        </p>
         </div>
 
         <div>
