@@ -50,27 +50,27 @@ export default function HomePage() {
           전공책, 생활용품, 각종 물품을 쉽고 가볍게 나눌 수 있습니다.
         </p>
 
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link
-            href="/signup"
-            className="rounded-xl bg-black px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
-          >
-            회원가입
-          </Link>
+      <div className="mt-8 flex items-center justify-center gap-3">
+        <Link
+          href="/signup"
+          className="whitespace-nowrap rounded-xl bg-black px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
+        >
+          회원가입
+        </Link>
 
-          <Link
-            href="/login"
-            className="rounded-xl border px-5 py-3 text-sm font-semibold text-gray-800 hover:bg-gray-50"
-          >
-            로그인
-          </Link>
-        </div>
+        <Link
+          href="/login"
+          className="whitespace-nowrap rounded-xl border px-5 py-3 text-sm font-semibold text-gray-800 hover:bg-gray-50"
+        >
+          로그인
+        </Link>
+      </div>
 
         <div className="mt-12 grid gap-4 text-left sm:grid-cols-3">
           <div className="rounded-2xl border bg-white p-4 shadow-sm">
             <h2 className="text-sm font-semibold">중고거래</h2>
             <p className="mt-2 text-sm text-gray-600">
-              전공책, 계산기, 생활용품 등을 학생끼리 편하게 거래할 수 있어요.
+              전공책, 생활용품 등을 학생끼리 편하게 거래할 수 있어요.
             </p>
           </div>
 
